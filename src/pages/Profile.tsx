@@ -327,12 +327,6 @@ export default function Profile() {
               </button>
             </div>
           </dl>
-
-          {error && (
-            <div className="mt-4 text-red-600 text-sm">
-              {error}
-            </div>
-          )}
         </div>
 
         {/* Projects that the volunteer has joined */}
@@ -611,6 +605,15 @@ export default function Profile() {
                 </dd>
               </div>
             )}
+
+            <div className="sm:col-span-2">
+              <button
+                onClick={() => setShowChangePassword(true)}
+                className="text-green-600 hover:text-green-700 font-medium"
+              >
+                Change Password
+              </button>
+            </div>
           </dl>
         </div>
       </div>
@@ -658,10 +661,16 @@ export default function Profile() {
                   className="mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500"
                 />
               </div>
+
+              {error && (
+                <div className="mt-4 text-red-600 text-sm text-center">
+                  {error}
+                </div>
+              )}
             </div>
             <div className="mt-6 flex justify-end space-x-3">
               <button
-                onClick={() => setShowChangePassword(false)}
+                onClick={() => { setShowChangePassword(false); setError(''); }}
                 className="px-4 py-2 border rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
                 Cancel
