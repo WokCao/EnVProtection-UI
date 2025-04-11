@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import Notification from './Notification';
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -42,6 +43,7 @@ export default function Navbar() {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
+                <Notification />
                 <Link
                   to="/profile"
                   className="text-gray-500 hover:text-gray-700 text-sm font-medium"

@@ -190,12 +190,14 @@ export default function Projects() {
               </div>
             </Link>
 
-            <div className="mt-2 mb-8">
-              <button className={`w-full  text-white py-2 px-4 rounded-md transition-colors ${project.status === "IN_PROGRESS" || project.status === "UPCOMING" ? project.volunteers.some(volunteer => volunteer.id === user.id) ? "bg-green-600" : "bg-green-500 hover:bg-green-600" : "bg-gray-500 cursor-not-allowed"}`}
-              onClick={() => handleJoinProject(project.id)} disabled={project.volunteers.some(volunteer => volunteer.id === user.id)}>
-                {project.status === "IN_PROGRESS" || project.status === "UPCOMING" ? isJoining ? "Joining..." : project.volunteers.some(volunteer => volunteer.id === user.id) ? "Joined" : "Join Project" : "Unavailable"}
-              </button>
-            </div>
+            {user.role === 'VOLUNTEER' && (
+              <div className="mt-2 mb-8">
+                <button className={`w-full  text-white py-2 px-4 rounded-md transition-colors ${project.status === "IN_PROGRESS" || project.status === "UPCOMING" ? project.volunteers.some(volunteer => volunteer.id === user.id) ? "bg-green-600" : "bg-green-500 hover:bg-green-600" : "bg-gray-500 cursor-not-allowed"}`}
+                onClick={() => handleJoinProject(project.id)} disabled={project.volunteers.some(volunteer => volunteer.id === user.id)}>
+                  {project.status === "IN_PROGRESS" || project.status === "UPCOMING" ? isJoining ? "Joining..." : project.volunteers.some(volunteer => volunteer.id === user.id) ? "Joined" : "Join Project" : "Unavailable"}
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>

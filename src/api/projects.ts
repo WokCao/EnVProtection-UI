@@ -29,6 +29,7 @@ export const projectsApi = {
 
   updateProject: async (id: string, project: Partial<Project>): Promise<Project> => {
     const response = await apiClient.put<Project>(`/projects/${id}`, project);
+    console.log(response.data);
     return response.data;
   },
 
@@ -58,7 +59,7 @@ export const projectsApi = {
     await apiClient.post(`/projects/${projectId}/quit`);
   },
 
-  getVolunteerProjects: async (volunteerId: number): Promise<Project[]> => {
+  getVolunteerProjects: async (volunteerId: number): Promise<{projects: Project[], size: number}> => {
     const response = await apiClient.get(`/projects/volunteer/${volunteerId}`);
     return response.data;
   },

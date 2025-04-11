@@ -8,6 +8,7 @@ import { useAuthStore } from '../store/authStore';
 import EditProjectModal from '../components/EditProjectModal';
 import DeleteProjectModal from '../components/DeleteProjectModal';
 import VolunteersModal from '../components/VolunteersModal';
+import { useProjectActions } from '../hooks/useProjectActions';
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
@@ -19,10 +20,10 @@ export default function ProjectDetails() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showVolunteersModal, setShowVolunteersModal] = useState(false);
-  const [isJoining, setIsJoining] = useState(false);
   const navigate = useNavigate();
   const isHost = user?.id === project?.hostOrganization.id;
   const isInProject = project?.volunteers.some(volunteer => volunteer.email === user!.email);
+  const { handleProjectAction, isLoading: isActionLoading, error: actionError } = useProjectActions();
 
   useEffect(() => {
     loadProject();
@@ -67,27 +68,17 @@ export default function ProjectDetails() {
   };
 
   const handleJoinProject = async () => {
-    try {
-      setIsJoining(true);
-      await projectsApi.joinProject(id!);
+    if (!project) return;
+    await handleProjectAction('join', project.id, () => {
       loadProject();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to join project');
-    } finally {
-      setIsJoining(false);
-    }
+    });
   };
 
   const handleQuitProject = async () => {
-    try {
-      setIsJoining(true);
-      await projectsApi.quitProject(id!);
+    if (!project) return;
+    await handleProjectAction('quit', project.id, () => {
       loadProject();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to quit project');
-    } finally {
-      setIsJoining(false);
-    }
+    });
   };
 
   if (isLoading) {
@@ -163,10 +154,10 @@ export default function ProjectDetails() {
           {!isHost && user?.role === 'VOLUNTEER' && (
             <button
               onClick={isInProject ? handleQuitProject : handleJoinProject}
-              disabled={isJoining || (!isInProject && project.volunteers.length >= project.volunteersNeeded) || project.status === "DONE"}
+              disabled={isActionLoading || (!isInProject && project.volunteers.length >= project.volunteersNeeded) || project.status === "DONE"}
               className={`px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 ${isInProject ? 'bg-red-600 hover:bg-red-700' : ''}`}
             >
-              {isJoining ? 'Joining...' : isInProject ? 'Quit Project' : 'Join Project'}
+              {isActionLoading ? 'Joining...' : isInProject ? 'Quit Project' : 'Join Project'}
             </button>
           )}
         </div>
@@ -372,6 +363,12 @@ export default function ProjectDetails() {
           project={project}
           onClose={() => setShowVolunteersModal(false)}
         />
+      )}
+
+      {actionError && (
+        <div className="mt-4 text-red-600 text-sm">
+          {actionError}
+        </div>
       )}
     </div>
   );
