@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BellIcon } from '@heroicons/react/16/solid';
 import { useNotificationStore } from '../store/notificationStore';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuthStore } from '../store/authStore';
 import { Notification as NotificationObject } from '../types/notification';
+import { useClickOutside } from '../hooks/useClickOutside';
 
 export default function Notification() {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const notificationRef = useRef<HTMLDivElement>(null);
   const {
     notifications,
     unreadCount,
@@ -20,6 +22,8 @@ export default function Notification() {
     markAllAsRead,
     updateUnreadCount,
   } = useNotificationStore();
+
+  useClickOutside(notificationRef, () => setIsOpen(false));
 
   useEffect(() => {
     if (isOpen) {
@@ -34,6 +38,7 @@ export default function Notification() {
   }, []);
 
   const handleNotificationClick = async (notification: any) => {
+    console.log(notification);
     await markAsRead(notification.id);
     if (notification.projectId) {
       navigate(`/projects/${notification.projectId}`);
@@ -90,7 +95,7 @@ export default function Notification() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={notificationRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
