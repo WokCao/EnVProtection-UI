@@ -2,16 +2,22 @@ import { useState, useEffect } from 'react';
 import { Project } from '../types/project';
 import { User } from '../types/user';
 import { disableBodyScroll, enableBodyScroll } from '../utils/modal';
+import { projectsApi } from '../api/projects';
+import { useAuthStore } from '../store/authStore';
+import defaultImage from '../../public/panda.png';
 
 interface VolunteersModalProps {
   project: Project;
   onClose: () => void;
+  onVolunteerRemoved?: (id: string) => void;
 }
 
-export default function VolunteersModal({ project, onClose }: VolunteersModalProps) {
+export default function VolunteersModal({ project, onClose, onVolunteerRemoved }: VolunteersModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, ] = useState(false);
-  const [error, ] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuthStore();
+  const isHost = user?.id === project.hostOrganization.id;
 
   useEffect(() => {
     disableBodyScroll();
@@ -21,6 +27,24 @@ export default function VolunteersModal({ project, onClose }: VolunteersModalPro
   const filteredVolunteers = project.volunteers.filter((volunteer: User) =>
     volunteer.fullName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleRemoveVolunteer = async (volunteerId: string) => {
+    if (!isHost) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await projectsApi.removeVolunteer(project.id, volunteerId);
+      if (onVolunteerRemoved) {
+        onVolunteerRemoved(volunteerId);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to remove volunteer');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
@@ -74,19 +98,40 @@ export default function VolunteersModal({ project, onClose }: VolunteersModalPro
                   key={volunteer.id}
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                 >
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">{volunteer.fullName}</h3>
-                    <p className="text-sm text-gray-500">{volunteer.email}</p>
+                  <div className="flex items-center space-x-4">
+                    <img
+                      src={defaultImage}
+                      alt={volunteer.fullName}
+                      className="h-10 w-10 rounded-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = defaultImage;
+                      }}
+                    />
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900">{volunteer.fullName}</h3>
+                      <p className="text-sm text-gray-500">{volunteer.email}</p>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-500">
-                    Joined {new Date(volunteer.createdAt).toLocaleDateString()}
+                  <div className="flex items-center space-x-4">
+                    <div className="text-sm text-gray-500 hidden sm:block">
+                      Joined {new Date(volunteer.createdAt).toLocaleDateString()}
+                    </div>
+                    {isHost && (
+                      <button
+                        onClick={() => handleRemoveVolunteer(volunteer.id)}
+                        className="text-red-300 hover:text-red-500 text-sm font-medium border-2 border-red-300 hover:border-red-500 transition-all duration-300 rounded-md px-2 py-1"
+                        disabled={isLoading}
+                      >
+                        Remove
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          <div className="mt-6 flex justify-end">
+          <div className="mt-6">
             <button
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
@@ -98,4 +143,4 @@ export default function VolunteersModal({ project, onClose }: VolunteersModalPro
       </div>
     </div>
   );
-} 
+}

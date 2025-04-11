@@ -362,6 +362,12 @@ export default function ProjectDetails() {
         <VolunteersModal
           project={project}
           onClose={() => setShowVolunteersModal(false)}
+          onVolunteerRemoved={(volunteerId) => {
+            setProject({
+              ...project,
+              volunteers: project.volunteers.filter(volunteer => volunteer.id !== volunteerId)
+            });
+          }}
         />
       )}
 

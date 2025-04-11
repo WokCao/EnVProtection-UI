@@ -63,4 +63,8 @@ export const projectsApi = {
     const response = await apiClient.get(`/projects/volunteer/${volunteerId}`);
     return response.data;
   },
+
+  removeVolunteer: async (projectId: string, volunteerId: string): Promise<void> => {
+    await apiClient.delete(`/projects/${projectId}/volunteers/${volunteerId}`);
+  },
 }; 

@@ -1,4 +1,4 @@
-export type NotificationType = 'PROJECT_UPDATE' | 'PROJECT_JOIN' | 'PROJECT_QUIT';
+export type NotificationType = 'PROJECT_UPDATE' | 'PROJECT_JOIN' | 'PROJECT_QUIT' | 'PROJECT_FORCE_TO_QUIT';
 
 export interface Notification {
   id: string;

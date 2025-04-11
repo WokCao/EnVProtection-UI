@@ -55,6 +55,12 @@ export default function Notification() {
     if (!notification.projectName) return 'No project name';
 
     switch (notification.type) {
+      case 'PROJECT_FORCE_TO_QUIT':
+        return (
+          <span>
+            You have been removed from <span className="font-bold">{notification.projectName}</span>
+          </span>
+        );
       case 'PROJECT_UPDATE':
         return (
           <span>
