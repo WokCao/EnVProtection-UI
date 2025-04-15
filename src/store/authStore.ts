@@ -87,7 +87,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = await usersApi.getProfile();
       set({ user: response, isAuthenticated: true });
     } catch (error: any) {
-      set({ error: error.response?.data?.message || 'Unauthorized' });
+      set({ error: error.message, user: null, isAuthenticated: false });
     } finally {
       set({ isLoading: false });
     }

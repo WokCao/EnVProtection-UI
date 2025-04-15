@@ -39,12 +39,17 @@ async function refreshAccessToken() {
   const refreshToken = localStorage.getItem('refreshToken');
   if (!refreshToken) throw new Error('No refresh token');
 
-  const response = await axios.post(`${API_URL}/sessions/current/refresh-token`, null, {
-    headers: {
-      'X-Stack-GreenFuture-Refresh-Token': refreshToken,
-    },
-  });
-  return response.data.accessToken;
+  try {
+    const response = await axios.post(`${API_URL}/auth/sessions/current/refresh-token`, null, {
+      headers: {
+        'X-Stack-GreenFuture-Refresh-Token': refreshToken,
+      },
+    });
+  
+    return response.data.accessToken;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 }
 
 // Response interceptor for handling errors

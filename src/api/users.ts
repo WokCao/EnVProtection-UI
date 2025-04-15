@@ -36,9 +36,9 @@ export const usersApi = {
   getProfile: async (): Promise<User> => {
     try {
       const response = await apiClient.get<GetProfileResponse>('/users/me');
-    return response.data as User;
+      return response.data as User;
     } catch (error: any) {
-      throw error;
+      throw new Error('Invalid token');
     }
   },
 
