@@ -34,8 +34,12 @@ interface ChangePasswordData {
 
 export const usersApi = {
   getProfile: async (): Promise<User> => {
-    const response = await apiClient.get<GetProfileResponse>('/users/me');
+    try {
+      const response = await apiClient.get<GetProfileResponse>('/users/me');
     return response.data as User;
+    } catch (error: any) {
+      throw error;
+    }
   },
 
   updateProfile: async (data: UpdateProfileData): Promise<User> => {

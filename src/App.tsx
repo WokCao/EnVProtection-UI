@@ -15,7 +15,7 @@ import OrganizationProjects from './pages/OrganizationProjects';
 import { useEffect } from 'react';
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, user, isLoading, reloadUser } = useAuthStore();
+  const { isAuthenticated, user, isLoading, reloadUser, error } = useAuthStore();
 
   useEffect(() => {
     if (!user) reloadUser();
@@ -29,7 +29,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || error) {
     return <Navigate to="/login" replace />;
   }
 

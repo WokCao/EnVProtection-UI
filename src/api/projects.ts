@@ -54,17 +54,17 @@ export const projectsApi = {
   },
 
   getProjectsByLocation: async (location: string): Promise<Project[]> => {
-    const response = await apiClient.get('/projects', {
+    const response = await apiClient.get<ProjectResponse>('/projects', {
       params: { location }
     });
-    return response.data;
+    return response.data._embedded.projectList;
   },
 
   getProjectsByRequirements: async (requirements: string[]): Promise<Project[]> => {
-    const response = await apiClient.get<Project[]>('/projects', {
+    const response = await apiClient.get<ProjectResponse>('/projects', {
       params: { requirements: requirements.join(',') },
     });
-    return response.data;
+    return response.data._embedded.projectList;
   },
 
   quitProject: async (projectId: string): Promise<void> => {
