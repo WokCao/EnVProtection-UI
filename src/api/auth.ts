@@ -2,7 +2,8 @@ import apiClient from './client';
 import { UserRole } from '../types/user';
 
 interface LoginResponse {
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   user: {
     id: string;
     email: string;
@@ -63,6 +64,15 @@ export const authApi = {
   register: async (data: RegisterData): Promise<LoginResponse> => {
     const response = await apiClient.post<LoginResponse>('/auth/register', data);
     return response.data;
+  },
+
+  logout: async (accessToken: string | null, refreshToken: string | null): Promise<void> => {
+    await apiClient.delete('/auth/sessions/current', {
+      headers: {
+        "X-Stack-GreenFuture-Refresh-Token": refreshToken,
+        "Authorization": accessToken
+      }
+    });
   },
 
   sendVerificationCode: async (data: ForgotPasswordData): Promise<void> => {

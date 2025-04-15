@@ -29,6 +29,8 @@ export default function Profile() {
   });
   const [error, setError] = useState('');
 
+  console.log('user', user);
+
   if (!user) {
     return null;
   }

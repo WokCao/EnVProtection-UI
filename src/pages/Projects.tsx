@@ -17,7 +17,9 @@ export default function Projects() {
   }
 
   useEffect(() => {
-    loadProjects();
+    if (user) {
+      loadProjects();
+    }
   }, [statusFilter]);
 
   const handleJoinProject = async (projectId: string) => {

@@ -1,10 +1,22 @@
 import apiClient from './client';
 import { Project } from '../types/project';
 
+interface ProjectResponse {
+  _embedded: {
+    projectList: Project[];
+  };
+  _links: {
+    self: {
+      href: string;
+    };
+  };
+  _size?: number;
+}
+
 export const projectsApi = {
   getAllProjects: async (): Promise<Project[]> => {
-    const response = await apiClient.get<Project[]>('/projects');
-    return response.data;
+    const response = await apiClient.get<ProjectResponse>('/projects');
+    return response.data._embedded.projectList;
   },
 
   getProjectById: async (id: string): Promise<Project> => {
@@ -13,13 +25,13 @@ export const projectsApi = {
   },
 
   getProjectsByStatus: async (status: Project['status']): Promise<Project[]> => {
-    const response = await apiClient.get<Project[]>(`/projects/status/${status}`);
-    return response.data;
+    const response = await apiClient.get<ProjectResponse>(`/projects/status/${status}`);
+    return response.data._embedded.projectList;
   },
 
   getProjectsByOrganization: async (organizationId: string): Promise<Project[]> => {
-    const response = await apiClient.get<Project[]>(`/projects/organization/${organizationId}`);
-    return response.data;
+    const response = await apiClient.get<ProjectResponse>(`/projects/organization/${organizationId}`);
+    return response.data._embedded.projectList;
   },
 
   createProject: async (project: Omit<Project, 'id'>): Promise<Project> => {
@@ -60,8 +72,8 @@ export const projectsApi = {
   },
 
   getVolunteerProjects: async (volunteerId: number): Promise<{projects: Project[], size: number}> => {
-    const response = await apiClient.get(`/projects/volunteer/${volunteerId}`);
-    return response.data;
+    const response = await apiClient.get<ProjectResponse>(`/projects/volunteer/${volunteerId}`);
+    return { projects: response.data._embedded.projectList, size: response.data._size || 0 };
   },
 
   removeVolunteer: async (projectId: string, volunteerId: string): Promise<void> => {

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { UserRole } from '../types/user';
 import { authApi } from '../api/auth';
+import { usersApi } from '../api/users';
 
 interface User {
   id: string;
@@ -28,6 +29,7 @@ interface AuthState {
   logout: () => void;
   clearError: () => void;
   setUser: (user: User) => void;
+  reloadUser: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -40,8 +42,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authApi.login(email, password);
-      console.log(response);
-      localStorage.setItem('token', response.token);
+      localStorage.setItem('accessToken', response.accessToken);
+      localStorage.setItem('refreshToken', response.refreshToken);
       set({ user: response.user, isAuthenticated: true });
     } catch (error: any) {
       set({ error: error.response?.data?.message || 'Login failed' });
@@ -54,8 +56,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authApi.register(data);
-      console.log(response);
-      localStorage.setItem('token', response.token);
+      localStorage.setItem('accessToken', response.accessToken);
+      localStorage.setItem('refreshToken', response.refreshToken);
       set({ user: response.user, isAuthenticated: true });
     } catch (error: any) {
       set({ error: error.response?.data?.message || 'Registration failed' });
@@ -64,8 +66,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  logout: () => {
-    localStorage.removeItem('token');
+  logout: async () => {
+    await authApi.logout(localStorage.getItem("accessToken"), localStorage.getItem("refreshToken"));
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     set({ user: null, isAuthenticated: false });
   },
 
@@ -76,4 +80,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUser: (user: User) => {
     set({ user });
   },
+
+  reloadUser: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await usersApi.getProfile();
+      set({ user: response, isAuthenticated: true });
+    } catch (error: any) {
+      set({ error: error.response?.data?.message || 'Unauthorized' });
+    } finally {
+      set({ isLoading: false });
+    }
+  }
 })); 
