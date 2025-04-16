@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authApi } from '../api/auth';
 
@@ -13,40 +13,50 @@ export default function ForgotPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [reSendCode, setReSendCode] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [remainingTime, setRemainingTime] = useState(300);
   const navigate = useNavigate();
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
+
+    if (step == 'verify') setReSendCode(true);
+
     try {
       await authApi.sendVerificationCode({ email });
       setStep('verify');
+      setRemainingTime(300);
     } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to send verification code. Please try again.');
+      setError(error.message || 'Failed to send verification code. Please try again.');
     } finally {
       setIsLoading(false);
+      setReSendCode(false);
     }
   };
 
   const handleVerifyCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (remainingTime <= 0) {
+      setError('Verification code has expired. Please request a new one.');
+      return;
+    }
+
     if (verificationCode.length !== 6) {
-      e.preventDefault();
       setError('Verification code should include 6 digits. Please check your email!');
       return;
     }
 
-    e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
+
     try {
       await authApi.verifyCode({ email, code: verificationCode });
       setStep('new-password');
     } catch (error: any) {
-      setError(error.response?.data?.message || 'Invalid verification code. Please try again.');
+      setError(error.message || 'Invalid verification code. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +71,7 @@ export default function ForgotPassword() {
 
     setIsLoading(true);
     setError(null);
-    
+
     try {
       await authApi.resetPassword({
         email,
@@ -70,11 +80,21 @@ export default function ForgotPassword() {
       });
       navigate('/login');
     } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to reset password. Please try again.');
+      setError(error.message || 'Failed to reset password. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (step === 'verify' && remainingTime > 0) {
+      const timer = setInterval(() => {
+        setRemainingTime((prev) => prev - 1);
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [step, remainingTime]);
 
   const renderEmailForm = () => (
     <form onSubmit={handleSendCode} className="space-y-6">
@@ -134,8 +154,20 @@ export default function ForgotPassword() {
           disabled={isLoading}
           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
         >
-          {isLoading ? 'Verifying...' : 'Verify Code'}
+          {isLoading && !reSendCode ? 'Verifying...' : 'Verify Code'}
         </button>
+      </div>
+
+      <div>
+        {remainingTime > 0 ? (
+          <p className="text-sm text-gray-600 text-center">
+            Code expires in {Math.floor(remainingTime / 60)}:{String(remainingTime % 60).padStart(2, '0')}
+          </p>
+        ) : (
+          <p className="text-sm text-red-600 text-center">
+            Code expired. <button onClick={handleSendCode} className="underline">Resend code</button>
+          </p>
+        )}
       </div>
     </form>
   );
@@ -242,7 +274,7 @@ export default function ForgotPassword() {
 
         {error && (
           <div className="rounded-md bg-red-50 p-4">
-            <div className="text-sm text-red-700">{error}</div>
+            <div className="text-sm text-red-700 text-center">{error}</div>
           </div>
         )}
 
