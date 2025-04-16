@@ -1,6 +1,7 @@
 import apiClient from './client';
 import { Organization } from '../types/user';
 import { Project } from '../types/project';
+import axios from 'axios';
 
 interface OrganizationWithFullStats {
   organization: Organization;
@@ -25,15 +26,38 @@ interface OrganizationWithProjects {
 
 export const organizationsApi = {
   getAllOrganizations: async (): Promise<OrganizationWithFullStats[]> => {
-    const response = await apiClient.get<OrganizationWithFullStats[]>('/organizations');
-    return response.data;
+    try {
+      const response = await apiClient.get<OrganizationWithFullStats[]>('/organizations');
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data || 'Failed to get organizations. Please try again!');
+      }
+      throw new Error('An unexpected error occurred during getting organizations.');
+    }
   },
+
   getOrganizationById: async (id: number): Promise<OrganizationWithStats> => {
-    const response = await apiClient.get<OrganizationWithStats>(`/organizations/${id}`);
-    return response.data;
+    try {
+      const response = await apiClient.get<OrganizationWithStats>(`/organizations/${id}`);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data || `Failed to get organization with id ${id}. Please try again!`);
+      }
+      throw new Error('An unexpected error occurred during getting organization.');
+    }
   },
+
   getOrganizationProjects: async (id: number): Promise<OrganizationWithProjects> => {
-    const response = await apiClient.get<OrganizationWithProjects>(`/organizations/${id}/projects`);
-    return response.data;
+    try {
+      const response = await apiClient.get<OrganizationWithProjects>(`/organizations/${id}/projects`);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data || `Failed to get projects for organization ${id}. Please try again!`);
+      }
+      throw new Error('An unexpected error occurred during getting organization projects.');
+    }
   },
 }; 
