@@ -38,7 +38,6 @@ export default function Notification() {
   }, []);
 
   const handleNotificationClick = async (notification: any) => {
-    console.log(notification);
     await markAsRead(notification.id);
     if (notification.projectId) {
       navigate(`/projects/${notification.projectId}`);

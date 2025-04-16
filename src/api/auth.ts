@@ -78,6 +78,7 @@ export const authApi = {
     }
   },
 
+  
   logout: async (accessToken: string | null, refreshToken: string | null): Promise<void> => {
     try {
       await apiClient.delete('/auth/sessions/current', {

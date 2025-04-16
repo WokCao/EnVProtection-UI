@@ -28,9 +28,7 @@ export default function Profile() {
     confirmPassword: '',
   });
   const [error, setError] = useState('');
-
-  console.log('user', user);
-
+  
   if (!user) {
     return null;
   }

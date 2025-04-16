@@ -41,7 +41,6 @@ export const projectsApi = {
 
   updateProject: async (id: string, project: Partial<Project>): Promise<Project> => {
     const response = await apiClient.put<Project>(`/projects/${id}`, project);
-    console.log(response.data);
     return response.data;
   },
 

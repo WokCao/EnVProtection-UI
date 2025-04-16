@@ -23,7 +23,6 @@ export const useNotificationStore = create<NotificationState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await notificationsApi.getNotifications();
-      console.log(response);
       set({ notifications: response.content });
     } catch (error: any) {
       set({ error: error.response?.data?.message || 'Failed to load notifications' });

@@ -12,20 +12,21 @@ import ForgotPassword from './pages/ForgotPassword';
 import Organizations from './pages/Organizations';
 import OrganizationDetails from './pages/OrganizationDetails';
 import OrganizationProjects from './pages/OrganizationProjects';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, user, isLoading, reloadUser, error } = useAuthStore();
+  const [isReloadingSuccessful, setIsReloadingSuccessful] = useState(false);
   const hasReloaded = useRef(false);
 
   useEffect(() => {
     if (!user && !hasReloaded.current) {
-      reloadUser();
+      reloadUser(setIsReloadingSuccessful);
       hasReloaded.current = true;
     }
   }, [user]);
 
-  if (isLoading) {
+  if (isLoading || (!user && !isAuthenticated && isReloadingSuccessful)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>

@@ -45,7 +45,6 @@ async function refreshAccessToken() {
         'X-Stack-GreenFuture-Refresh-Token': refreshToken,
       },
     });
-  
     return response.data.accessToken;
   } catch (error: any) {
     throw new Error(error.message);
