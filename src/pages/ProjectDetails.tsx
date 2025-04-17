@@ -524,7 +524,7 @@ export default function ProjectDetails() {
               <MapContainer
                 center={[project.latitude, project.longitude]}
                 zoom={13}
-                style={{ height: '100%', width: '100%' }}
+                style={{ height: '100%', width: '100%', zIndex: 5 }}
               >
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

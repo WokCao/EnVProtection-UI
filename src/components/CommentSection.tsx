@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { Project } from '../types/project';
+import ReportPopup from './ReportPopup';
 
 interface Comment {
     id: string;
@@ -18,7 +19,7 @@ interface CommentSectionProps {
     onComment: (content: string, emoji?: string) => void;
     onDelete: (commentId: string) => void;
     onLike: (commentId: string) => void;
-    onReport: (commentId: string) => void;
+    onReport: (commentId: string, reasons: string[], customReason?: string) => void;
     data: Comment[];
 }
 
@@ -29,6 +30,8 @@ export default function CommentSection({ project, onComment, onDelete, onLike, o
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [showReportPopup, setShowReportPopup] = useState(false);
+    const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null);
     const { user } = useAuthStore();
     const commentsRef = useRef<HTMLDivElement>(null);
 
@@ -38,6 +41,17 @@ export default function CommentSection({ project, onComment, onDelete, onLike, o
             onComment(newComment, selectedEmoji || undefined);
             setNewComment('');
             setSelectedEmoji(null);
+        }
+    };
+
+    const handleReportClick = (commentId: string) => {
+        setSelectedCommentId(commentId);
+        setShowReportPopup(true);
+    };
+
+    const handleReportSubmit = (reasons: string[], customReason?: string) => {
+        if (selectedCommentId) {
+            onReport(selectedCommentId, reasons, customReason);
         }
     };
 
@@ -157,7 +171,7 @@ export default function CommentSection({ project, onComment, onDelete, onLike, o
                                                 <span>{comment.likes}</span>
                                             </button>
                                             <button
-                                                onClick={() => onReport(comment.id)}
+                                                onClick={() => handleReportClick(comment.id)}
                                                 className="text-gray-500 hover:text-red-600"
                                             >
                                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -182,6 +196,15 @@ export default function CommentSection({ project, onComment, onDelete, onLike, o
                     </div>
                 </>
             )}
+
+            <ReportPopup
+                isOpen={showReportPopup}
+                onClose={() => {
+                    setShowReportPopup(false);
+                    setSelectedCommentId(null);
+                }}
+                onSubmit={handleReportSubmit}
+            />
         </div>
     );
 } 
