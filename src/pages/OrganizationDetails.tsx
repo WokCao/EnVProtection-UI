@@ -1,20 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { organizationsApi } from '../api/organizations';
-import { Organization } from '../types/user';
-import { Project, ProjectStatus } from '../types/project';
-
-interface OrganizationWithStats {
-  organization: Organization;
-  activeProjects: number;
-  project: Project[];
-  volunteers: number;
-  country?: string;
-}
+import { organizationsApi, OrganizationWithActiveProjectVolunteer } from '../api/organizations';
+import { ProjectStatus } from '../types/project';
 
 export default function OrganizationDetails() {
   const { id } = useParams<{ id: string }>();
-  const [organization, setOrganization] = useState<OrganizationWithStats | null>(null);
+  const [organization, setOrganization] = useState<OrganizationWithActiveProjectVolunteer | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -72,12 +63,12 @@ export default function OrganizationDetails() {
         {/* Header Section */}
         <div className="relative h-64">
           <img
-            src={organization.organization.logo}
-            alt={organization.organization.fullName}
+            src={organization.organizationEntityModel.logo}
+            alt={organization.organizationEntityModel.fullName}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-            <h1 className="text-4xl font-bold text-white">{organization.organization.fullName}</h1>
+            <h1 className="text-4xl font-bold text-white">{organization.organizationEntityModel.fullName}</h1>
           </div>
         </div>
 
@@ -99,7 +90,7 @@ export default function OrganizationDetails() {
             </div>
             <div className="bg-green-50 p-6 rounded-lg text-center">
               <div className="text-3xl font-bold text-green-600 mb-2">
-                {new Date(organization.organization.foundedDate).getFullYear()}
+                {new Date(organization.organizationEntityModel.foundedDate).getFullYear()}
               </div>
               <div className="text-gray-600">Founded</div>
             </div>
@@ -109,7 +100,7 @@ export default function OrganizationDetails() {
           {/* Description */}
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">About Us</h2>
-            <p className="text-gray-600">{organization.organization.description}</p>
+            <p className="text-gray-600">{organization.organizationEntityModel.description}</p>
           </div>
 
           {/* Contact Information */}
@@ -118,22 +109,22 @@ export default function OrganizationDetails() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Address</h3>
-                <p className="text-gray-600">{organization.organization.address}</p>
+                <p className="text-gray-600">{organization.organizationEntityModel.address}</p>
               </div>
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">Contact</h3>
-                <p className="text-gray-600">Email: {organization.organization.email}</p>
-                <p className="text-gray-600">Phone: {organization.organization.phoneNumber}</p>
+                <p className="text-gray-600">Email: {organization.organizationEntityModel.email}</p>
+                <p className="text-gray-600">Phone: {organization.organizationEntityModel.phoneNumber}</p>
               </div>
             </div>
           </div>
 
           {/* Website */}
-          {organization.organization.website && (
+          {organization.organizationEntityModel.website && (
             <div className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">Website</h2>
               <a
-                href={organization.organization.website}
+                href={organization.organizationEntityModel.website}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-green-600 hover:text-green-700 font-medium"
@@ -184,13 +175,13 @@ export default function OrganizationDetails() {
           {/* Action Buttons */}
           <div className="flex space-x-4">
             <Link
-              to={`/organizations/${organization.organization.id}/projects`}
+              to={`/organizations/${organization.organizationEntityModel.id}/projects`}
               className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
             >
               View All Projects
             </Link>
             <Link
-              to={`/organizations/${organization.organization.id}/volunteers`}
+              to={`/organizations/${organization.organizationEntityModel.id}/volunteers`}
               className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
             >
               View Volunteers

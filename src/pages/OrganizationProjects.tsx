@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
-import { organizationsApi } from '../api/organizations';
+import { organizationsApi, OrganizationWithProject } from '../api/organizations';
 import { Project, ProjectStatus } from '../types/project';
-import { Organization } from '../types/user';
-
-interface OrganizationWithProjects {
-  organization: Organization;
-  projects: Project[];
-}
 
 type SortOption = 'name' | 'status' | 'location' | 'date' | 'volunteers';
 
@@ -21,7 +15,7 @@ interface FilterState {
 export default function OrganizationProjects() {
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [organization, setOrganization] = useState<OrganizationWithProjects | null>(null);
+  const [organization, setOrganization] = useState<OrganizationWithProject | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,8 +52,8 @@ export default function OrganizationProjects() {
       }
       const data = await organizationsApi.getOrganizationProjects(organizationId);
       setOrganization({
-        organization: data.organization,
-        projects: data.projects
+        organizationEntityModel: data.organizationEntityModel,
+        project: data.project
       });
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load organization projects');
@@ -179,7 +173,7 @@ export default function OrganizationProjects() {
     );
   }
 
-  const filteredAndSortedProjects = sortProjects(filterProjects(organization.projects));
+  const filteredAndSortedProjects = sortProjects(filterProjects(organization.project));
   const totalPages = Math.ceil(filteredAndSortedProjects.length / projectsPerPage);
   const currentProjects = filteredAndSortedProjects.slice(
     (currentPage - 1) * projectsPerPage,
@@ -190,10 +184,10 @@ export default function OrganizationProjects() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
-          {organization.organization.fullName} Projects
+          {organization.organizationEntityModel.fullName} Projects
         </h1>
         <Link
-          to={`/organizations/${organization.organization.id}`}
+          to={`/organizations/${organization.organizationEntityModel.id}`}
           className="text-green-600 hover:text-green-700 font-medium"
         >
           ← Back to Organization

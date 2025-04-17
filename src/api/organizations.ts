@@ -3,32 +3,58 @@ import { Organization } from '../types/user';
 import { Project } from '../types/project';
 import axios from 'axios';
 
-interface OrganizationWithFullStats {
-  organization: Organization;
+export interface OrganizationWithProjectCountVolunteer {
+  organizationEntityModel: Organization;
   projectCount: number;
   volunteers: number;
   coordinates?: [number, number];
   country?: string;
 }
 
-interface OrganizationWithStats {
-  organization: Organization;
+export interface OrganizationWithActiveProjectVolunteer {
+  organizationEntityModel: Organization;
   activeProjects: number;
   project: Project[];
   volunteers: number;
   country?: string;
 }
 
-interface OrganizationWithProjects {
-  organization: Organization;
-  projects: Project[];
+export interface OrganizationWithProject {
+  organizationEntityModel: Organization;
+  project: Project[];
+}
+
+interface OrganizationWithProjectCountVolunteerResponse {
+  _embedded: {
+    orgWithProjectCountVolunteerList: OrganizationWithProjectCountVolunteer[];
+  }
+}
+
+interface OrganizationWithActiveProjectVolunteerResponse {
+  organizationEntityModel: Organization;
+  projectListEntityModel: {
+    _embedded: {
+      projectList: Project[];
+    }
+  }
+  activeProjects: number;
+  volunteers: number;
+}
+
+interface OrganizationWithProjectResponse {
+  organizationEntityModel: Organization;
+  projectListEntityModel: {
+    _embedded: {
+      projectList: Project[];
+    }
+  }
 }
 
 export const organizationsApi = {
-  getAllOrganizations: async (): Promise<OrganizationWithFullStats[]> => {
+  getAllOrganizations: async (): Promise<OrganizationWithProjectCountVolunteer[]> => {
     try {
-      const response = await apiClient.get<OrganizationWithFullStats[]>('/organizations');
-      return response.data;
+      const response = await apiClient.get<OrganizationWithProjectCountVolunteerResponse>('/organizations');
+      return response.data._embedded.orgWithProjectCountVolunteerList;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data || 'Failed to get organizations. Please try again!');
@@ -37,10 +63,15 @@ export const organizationsApi = {
     }
   },
 
-  getOrganizationById: async (id: number): Promise<OrganizationWithStats> => {
+  getOrganizationById: async (id: number): Promise<OrganizationWithActiveProjectVolunteer> => {
     try {
-      const response = await apiClient.get<OrganizationWithStats>(`/organizations/${id}`);
-      return response.data;
+      const response = await apiClient.get<OrganizationWithActiveProjectVolunteerResponse>(`/organizations/${id}`);
+      return {
+        organizationEntityModel: response.data.organizationEntityModel,
+        activeProjects: response.data.activeProjects,
+        project: response.data.projectListEntityModel._embedded.projectList,
+        volunteers: response.data.volunteers,
+      };
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data || `Failed to get organization with id ${id}. Please try again!`);
@@ -49,10 +80,13 @@ export const organizationsApi = {
     }
   },
 
-  getOrganizationProjects: async (id: number): Promise<OrganizationWithProjects> => {
+  getOrganizationProjects: async (id: number): Promise<OrganizationWithProject> => {
     try {
-      const response = await apiClient.get<OrganizationWithProjects>(`/organizations/${id}/projects`);
-      return response.data;
+      const response = await apiClient.get<OrganizationWithProjectResponse>(`/organizations/${id}/projects`);
+      return {
+        organizationEntityModel: response.data.organizationEntityModel,
+        project: response.data.projectListEntityModel._embedded.projectList,
+      };
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data || `Failed to get projects for organization ${id}. Please try again!`);

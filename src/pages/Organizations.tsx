@@ -1,8 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { Organization } from '../types/user';
-import { organizationsApi } from '../api/organizations';
+import { organizationsApi, OrganizationWithProjectCountVolunteer } from '../api/organizations';
 import 'leaflet/dist/leaflet.css';
 import { LatLngExpression } from 'leaflet';
 import L from 'leaflet';
@@ -18,16 +17,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-interface OrganizationWithFullStats {
-  organization: Organization;
-  projectCount: number;
-  volunteers: number;
-  coordinates?: [number, number];
-  country?: string;
-}
-
 export default function Organizations() {
-  const [organizations, setOrganizations] = useState<OrganizationWithFullStats[]>([]);
+  const [organizations, setOrganizations] = useState<OrganizationWithProjectCountVolunteer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,10 +62,11 @@ export default function Organizations() {
       setIsLoading(true);
       setError(null);
       const data = await organizationsApi.getAllOrganizations();
+      console.log(data);
       
       const organizationsWithCoords = await Promise.all(
         data.map(async (org) => {
-          const { coordinates, country } = await geocodeAddress(org.organization.address);
+          const { coordinates, country } = await geocodeAddress(org.organizationEntityModel.address);
           return {
             ...org,
             coordinates: coordinates || [0, 0],
@@ -85,7 +77,7 @@ export default function Organizations() {
       
       setOrganizations(organizationsWithCoords);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load organizations');
+      setError(err.message|| 'Failed to load organizations');
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +94,7 @@ export default function Organizations() {
   }, [organizations]);
 
   const filteredOrganizations = organizations.filter((org) => {
-    const matchesSearch = org.organization.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = org.organizationEntityModel.fullName.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesLocation = !locationFilter || org.country?.toLowerCase().includes(locationFilter.toLowerCase());
     return matchesSearch && matchesLocation;
   });
@@ -157,17 +149,17 @@ export default function Organizations() {
         <div className="space-y-6 h-screen overflow-y-auto pb-10">
           {filteredOrganizations.map((org) => (
             <Link
-              key={org.organization.id}
-              to={`/organizations/${org.organization.id}`}
+              key={org.organizationEntityModel.id}
+              to={`/organizations/${org.organizationEntityModel.id}`}
               className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
             >
               <div className="p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                  {org.organization.fullName}
+                  {org.organizationEntityModel.fullName}
                 </h2>
-                <p className="text-gray-600 mb-4">{org.organization.description}</p>
+                <p className="text-gray-600 mb-4">{org.organizationEntityModel.description}</p>
                 <div className="flex items-center justify-between text-sm text-gray-500 space-x-4">
-                  <span className='truncate w-2/5'>📍 {org.organization.address}, {org.country}</span>
+                  <span className='truncate w-2/5'>📍 {org.organizationEntityModel.address}, {org.country}</span>
                   <span>🌟 {org.projectCount} Projects</span>
                   <span>👥 {org.volunteers} Volunteers</span>
                 </div>
@@ -190,15 +182,15 @@ export default function Organizations() {
             />
             {filteredOrganizations.map((org) => (
               <Marker 
-                key={org.organization.id} 
+                key={org.organizationEntityModel.id} 
                 position={org.coordinates || [0, 0]}
               >
                 <Popup>
                   <div className="p-2">
-                    <h3 className="font-semibold">{org.organization.fullName}</h3>
-                    <p className="text-sm">{org.organization.address}, {org.country}</p>
+                    <h3 className="font-semibold">{org.organizationEntityModel.fullName}</h3>
+                    <p className="text-sm">{org.organizationEntityModel.address}, {org.country}</p>
                     <Link
-                      to={`/organizations/${org.organization.id}`}
+                      to={`/organizations/${org.organizationEntityModel.id}`}
                       className="text-green-600 hover:text-green-700 text-sm font-medium"
                     >
                       View Details
