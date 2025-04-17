@@ -2,6 +2,17 @@ import { User } from "./user";
 
 export type ProjectStatus = 'UPCOMING' | 'IN_PROGRESS' | 'DONE';
 
+export interface Comment {
+  id: string;
+  userId: string;
+  userName: string;
+  content: string;
+  emoji?: string;
+  date: string;
+  likes: number;
+  isLiked: boolean;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -9,17 +20,15 @@ export interface Project {
   fullDescription: string;
   image: string;
   status: ProjectStatus;
+  date: string;
+  time: string;
   location: string;
   latitude: number;
   longitude: number;
-  date: string;
-  time: string;
+  volunteersNeeded: number;
+  volunteers: User[];
+  hostOrganization: User;
   requirements: string[];
   impact?: string;
-  volunteersNeeded: number;
-  hostOrganization: {
-    id: string;
-    name: string;
-  };
-  volunteers: User[];
+  comments?: Comment[];
 } 

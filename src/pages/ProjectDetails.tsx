@@ -9,11 +9,12 @@ import EditProjectModal from '../components/EditProjectModal';
 import DeleteProjectModal from '../components/DeleteProjectModal';
 import VolunteersModal from '../components/VolunteersModal';
 import { useProjectActions } from '../hooks/useProjectActions';
+import CommentSection from '../components/CommentSection';
 
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuthStore();
-  const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<Project | null>();
   const [similarProjects, setSimilarProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,6 +25,58 @@ export default function ProjectDetails() {
   const isHost = user?.id === project?.hostOrganization.id;
   const isInProject = project?.volunteers.some(volunteer => volunteer.email === user!.email);
   const { handleProjectAction, isLoading: isActionLoading, error: actionError } = useProjectActions();
+  const comments = [
+    {
+      id: "1",
+      userId: "user1",
+      userName: "Sarah Johnson",
+      content: "I'm really excited to participate in this cleanup! I've been to this beach before and it's beautiful. Can't wait to help keep it clean!",
+      emoji: "🌊",
+      date: "2024-03-20T10:30:00Z",
+      likes: 12,
+      isLiked: false
+    },
+    {
+      id: "2",
+      userId: "user2",
+      userName: "Michael Chen",
+      content: "This is a great initiative! I'll be bringing my whole family. We've been looking for ways to contribute to environmental protection.",
+      emoji: "🌱",
+      date: "2024-03-21T15:45:00Z",
+      likes: 8,
+      isLiked: true
+    },
+    {
+      id: "3",
+      userId: "user3",
+      userName: "Emma Rodriguez",
+      content: "I'm a marine biology student and I can't stress enough how important these cleanups are for our ecosystem. Count me in!",
+      emoji: "🐠",
+      date: "2024-03-22T09:15:00Z",
+      likes: 15,
+      isLiked: false
+    },
+    {
+      id: "4",
+      userId: "user4",
+      userName: "David Wilson",
+      content: "Will there be any educational sessions about marine conservation during the event?",
+      emoji: "📚",
+      date: "2024-03-23T11:20:00Z",
+      likes: 5,
+      isLiked: false
+    },
+    {
+      id: "5",
+      userId: "user5",
+      userName: "Lisa Park",
+      content: "I've organized similar events before. Would love to help with the coordination if needed!",
+      emoji: "🤝",
+      date: "2024-03-24T14:30:00Z",
+      likes: 7,
+      isLiked: true
+    }
+  ]
 
   useEffect(() => {
     loadProject();
@@ -79,6 +132,71 @@ export default function ProjectDetails() {
     await handleProjectAction('quit', project.id, () => {
       loadProject();
     });
+  };
+
+  const handleComment = async (content: string, emoji?: string) => {
+    try {
+      // Call API to add comment
+      const newComment = {
+        id: Date.now().toString(),
+        userId: user!.id,
+        userName: user!.fullName,
+        content,
+        emoji,
+        date: new Date().toISOString(),
+        likes: 0,
+        isLiked: false
+      };
+      
+      setProject(prev => ({
+        ...prev!,
+        comments: [...(prev?.comments || []), newComment]
+      }));
+    } catch (err) {
+      console.error('Failed to add comment:', err);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      // Call API to delete comment
+      setProject(prev => ({
+        ...prev!,
+        comments: prev?.comments?.filter(comment => comment.id !== commentId)
+      }));
+    } catch (err) {
+      console.error('Failed to delete comment:', err);
+    }
+  };
+
+  const handleLikeComment = async (commentId: string) => {
+    try {
+      // Call API to like comment
+      setProject(prev => ({
+        ...prev!,
+        comments: prev?.comments?.map(comment => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1,
+              isLiked: !comment.isLiked
+            };
+          }
+          return comment;
+        })
+      }));
+    } catch (err) {
+      console.error('Failed to like comment:', err);
+    }
+  };
+
+  const handleReportComment = async (commentId: string) => {
+    try {
+      // Call API to report comment
+      alert('Comment reported successfully');
+    } catch (err) {
+      console.error('Failed to report comment:', err);
+    }
   };
 
   if (isLoading) {
@@ -232,6 +350,16 @@ export default function ProjectDetails() {
               ))}
             </ul>
           </div>
+
+          {/* Comments Section */}
+          <CommentSection
+            project={project}
+            onComment={handleComment}
+            onDelete={handleDeleteComment}
+            onLike={handleLikeComment}
+            onReport={handleReportComment}
+            data={comments}
+          />
 
           {/* Similar Projects Section */}
           {similarProjects.length > 0 && (
