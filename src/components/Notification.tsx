@@ -100,10 +100,11 @@ export default function Notification() {
   };
 
   return (
-    <div className="relative" ref={notificationRef}>
+    <div className="relative !ml-0" ref={notificationRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
+        className="relative p-2 text-gray-500 hover:text-gray-900 focus:outline-none"
+        title="Notifications"
       >
         <BellIcon className="h-6 w-6" />
         {unreadCount > 0 && (
