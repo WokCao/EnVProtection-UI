@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Project, ProjectStatus } from '../types/project';
 import { projectsApi } from '../api/projects';
 import { useAuthStore } from '../store/authStore';
@@ -8,10 +8,15 @@ export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all');
+  const [searchParams] = useSearchParams();
+  const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>(
+    (searchParams.get('status') as ProjectStatus) || 'all'
+  );
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('name') || ''
+  );
   const [isJoining, setIsJoining] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const { user } = useAuthStore();
   const projectsPerPage = 9;
@@ -24,7 +29,7 @@ export default function Projects() {
     if (user) {
       loadProjects();
     }
-  }, [statusFilter]);
+  }, [statusFilter, searchQuery]);
 
   const handleJoinProject = async (projectId: string) => {
     try {
@@ -42,9 +47,23 @@ export default function Projects() {
     try {
       setIsLoading(true);
       setError(null);
-      const data = statusFilter === 'all'
-        ? await projectsApi.getAllProjects()
-        : await projectsApi.getProjectsByStatus(statusFilter);
+      let data: Project[] = [];
+      
+      if (statusFilter === 'all') {
+        data = await projectsApi.getAllProjects();
+      } else {
+        data = await projectsApi.getProjectsByStatus(statusFilter);
+      }
+
+      // Apply search filter if there's a search query
+      if (searchQuery) {
+        data = data.filter(project => 
+          project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          project.briefDescription?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          project.location.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
       setProjects(data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load projects');
