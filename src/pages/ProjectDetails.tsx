@@ -264,7 +264,7 @@ export default function ProjectDetails() {
                         </div>
                       </div>
                       <div className="p-4">
-                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-green-600 transition-colors duration-200 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-green-600 transition-colors duration-200 mb-2 truncate" title={similarProject.name}>
                           {similarProject.name}
                         </h3>
                         <p className="text-gray-600 text-sm line-clamp-2 mb-4">

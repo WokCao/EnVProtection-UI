@@ -3,14 +3,18 @@ import { Link } from 'react-router-dom';
 import { Project, ProjectStatus } from '../types/project';
 import { projectsApi } from '../api/projects';
 import { useAuthStore } from '../store/authStore';
+
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all');
   const [isJoining, setIsJoining] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { user } = useAuthStore();
+  const projectsPerPage = 9;
 
   if (!user) {
     return null;
@@ -62,6 +66,52 @@ export default function Projects() {
     }
   };
 
+  const filteredProjects = projects.filter(project => 
+    project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    project.briefDescription?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    project.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
+  const currentProjects = filteredProjects.slice(
+    (currentPage - 1) * projectsPerPage,
+    currentPage * projectsPerPage
+  );
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      pageNumbers.push(1);
+      
+      if (currentPage <= 4) {
+        for (let i = 2; i <= 5; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalPages);
+      } else if (currentPage >= totalPages - 3) {
+        pageNumbers.push('...');
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        pageNumbers.push('...');
+        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+          pageNumbers.push(i);
+        }
+        pageNumbers.push('...');
+        pageNumbers.push(totalPages);
+      }
+    }
+    
+    return pageNumbers;
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -85,6 +135,13 @@ export default function Projects() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Projects</h1>
         <div className="flex space-x-4">
+          <input
+            type="text"
+            placeholder="Search projects..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+          />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as ProjectStatus | 'all')}
@@ -99,11 +156,9 @@ export default function Projects() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {projects.map((project) => (
-          <div>
-
+        {currentProjects.map((project) => (
+          <div key={project.id}>
             <Link
-              key={project.id}
               to={`/projects/${project.id}`}
               className="block group"
             >
@@ -188,13 +243,12 @@ export default function Projects() {
                     {project.volunteers.length} / {project.volunteersNeeded} volunteers
                   </div>
                 </div>
-
               </div>
             </Link>
 
             {user.role === 'VOLUNTEER' && (
               <div className="mt-2 mb-8">
-                <button className={`w-full  text-white py-2 px-4 rounded-md transition-colors ${project.status === "IN_PROGRESS" || project.status === "UPCOMING" ? project.volunteers.some(volunteer => volunteer.id === user.id) ? "bg-green-600" : "bg-green-500 hover:bg-green-600" : "bg-gray-500 cursor-not-allowed"}`}
+                <button className={`w-full text-white py-2 px-4 rounded-md transition-colors ${project.status === "IN_PROGRESS" || project.status === "UPCOMING" ? project.volunteers.some(volunteer => volunteer.id === user.id) ? "bg-green-600" : "bg-green-500 hover:bg-green-600" : "bg-gray-500 cursor-not-allowed"}`}
                 onClick={() => handleJoinProject(project.id)} disabled={project.volunteers.some(volunteer => volunteer.id === user.id)}>
                   {project.status === "IN_PROGRESS" || project.status === "UPCOMING" ? isJoining ? "Joining..." : project.volunteers.some(volunteer => volunteer.id === user.id) ? "Joined" : "Join Project" : "Unavailable"}
                 </button>
@@ -203,6 +257,59 @@ export default function Projects() {
           </div>
         ))}
       </div>
+
+      {filteredProjects.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No projects found matching your search criteria.</p>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center mt-8 space-x-2">
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === 1
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-green-200 text-white hover:bg-green-400'
+            }`}
+          >
+            Previous
+          </button>
+          
+          {getPageNumbers().map((page, index) => (
+            page === '...' ? (
+              <span key={`ellipsis-${index}`} className="px-2">...</span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page as number)}
+                className={`px-3 py-1 rounded-md ${
+                  currentPage === page
+                    ? 'bg-green-500 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {page}
+              </button>
+            )
+          ))}
+          
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === totalPages
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-green-200 text-white hover:bg-green-400'
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
