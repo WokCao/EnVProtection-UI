@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Organization } from '../types/user';
+import { Organization, Volunteer } from '../types/user';
 import { Project } from '../types/project';
 import axios from 'axios';
 
@@ -92,6 +92,19 @@ export const organizationsApi = {
         throw new Error(error.response?.data || `Failed to get projects for organization ${id}. Please try again!`);
       }
       throw new Error('An unexpected error occurred during getting organization projects.');
+    }
+  },
+
+  getOrganizationVolunteers: async (organizationId: string): Promise<Volunteer[]> => {
+    try {
+      const response = await apiClient.get(`/organizations/${organizationId}/volunteers`);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data || `Failed to get volunteers for organization ${organizationId}. Please try again!`);
+      }
+      throw new Error('An unexpected error occurred during getting organization volunteers.');
     }
   },
 }; 

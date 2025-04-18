@@ -295,7 +295,7 @@ export default function OrganizationProjects() {
             to={`/projects/${project.id}`}
             className="block group h-full"
           >
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 h-full border-2 border-green-100 hover:border-green-300">
+            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200 h-full">
               <div className="relative h-48">
                 <img
                   src={project.image}
