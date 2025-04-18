@@ -114,7 +114,7 @@ export default function Notification() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+        <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
           <div className="p-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium text-gray-900">Notifications</h3>
@@ -137,7 +137,7 @@ export default function Notification() {
             ) : notifications.length === 0 ? (
               <div className="text-gray-500 text-sm text-center py-4">No notifications</div>
             ) : (
-              <div className="space-y-2 max-h-96 overflow-y-auto">
+              <div className="space-y-2 max-h-[33vh] overflow-y-auto">
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}

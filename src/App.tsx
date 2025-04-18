@@ -12,6 +12,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Organizations from './pages/Organizations';
 import OrganizationDetails from './pages/OrganizationDetails';
 import OrganizationProjects from './pages/OrganizationProjects';
+import Notifications from './pages/Notifications';
 import { useEffect, useRef, useState } from 'react';
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -137,6 +138,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <OrganizationProjects />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <Notifications />
                 </ProtectedRoute>
               }
             />
