@@ -51,17 +51,17 @@ export const notificationsApi = {
     }
   },
 
-  canSendNotification: async (type: string, projectId: string): Promise<{ canSend: boolean; reason?: string }> => {
-    try {
-      const response = await apiClient.get<{ canSend: boolean; reason?: string }>('/notifications/can-send', {
-        params: { type, projectId }
-      });
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data || 'Failed to check notification permission. Please try again!');
-      }
-      throw new Error('An unexpected error occurred during checking notification permission.');
-    }
-  }
+  // canSendNotification: async (type: string, projectId: string): Promise<{ canSend: boolean; reason?: string }> => {
+  //   try {
+  //     const response = await apiClient.get<{ canSend: boolean; reason?: string }>('/notifications/can-send', {
+  //       params: { type, projectId }
+  //     });
+  //     return response.data;
+  //   } catch (error) {
+  //     if (axios.isAxiosError(error)) {
+  //       throw new Error(error.response?.data || 'Failed to check notification permission. Please try again!');
+  //     }
+  //     throw new Error('An unexpected error occurred during checking notification permission.');
+  //   }
+  // }
 }; 

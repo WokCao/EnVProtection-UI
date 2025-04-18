@@ -32,8 +32,7 @@ export default function Notification() {
   }, [isOpen]);
 
   useEffect(() => {
-    // Update unread count periodically
-    const interval = setInterval(updateUnreadCount, 30000); // Every 30 seconds
+    const interval = setInterval(updateUnreadCount, 10000);
     return () => clearInterval(interval);
   }, []);
 

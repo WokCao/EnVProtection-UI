@@ -28,7 +28,7 @@ export default function SettingsDropdown({ onLogout }: SettingsDropdownProps) {
   };
 
   return (
-    <div className="relative !ml-0" ref={dropdownRef}>
+    <div className="relative !ml-2" ref={dropdownRef}>
       <button
         onClick={() => setShowSettings(!showSettings)}
         className="p-1 rounded-full text-gray-500 hover:text-gray-900 focus:outline-none"

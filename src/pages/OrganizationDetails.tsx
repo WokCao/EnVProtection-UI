@@ -145,16 +145,16 @@ export default function OrganizationDetails() {
                 >
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-xl font-semibold text-gray-900">
+                      <h3 className="text-xl font-semibold text-gray-900 line-clamp-2">
                         {project.name}
                       </h3>
                       <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(project.status)}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium truncate ${getStatusColor(project.status)}`}
                       >
                         {project.status.replace('_', ' ')}
                       </span>
                     </div>
-                    <p className="text-gray-600 mb-4">{project.briefDescription}</p>
+                    <p className="text-gray-600 mb-4 line-clamp-3">{project.briefDescription}</p>
                     <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
                       <span>📍 {project.location}</span>
                       <span>📅 {new Date(project.date).toLocaleDateString()}</span>
