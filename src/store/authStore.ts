@@ -3,7 +3,7 @@ import { UserRole } from '../types/user';
 import { authApi } from '../api/auth';
 import { usersApi } from '../api/users';
 
-interface User {
+export interface User {
   id: string;
   email: string;
   role: UserRole;

@@ -30,8 +30,8 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
     location: project.location,
     latitude: project.latitude,
     longitude: project.longitude,
-    date: project.date,
-    time: project.time,
+    startDate: project.startDate,
+    expectedEndDate: project.expectedEndDate,
     requirements: project.requirements,
     impact: project.impact || '',
     hostOrganization: project.hostOrganization,
@@ -287,30 +287,30 @@ export default function EditProjectModal({ project, onClose, onSuccess }: EditPr
                 </div>
 
                 <div>
-                  <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-                    Date
+                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+                    Start Date
                   </label>
                   <input
-                    type="date"
-                    name="date"
-                    id="date"
+                    type="datetime-local"
+                    name="startDate"
+                    id="startDate"
                     required
-                    value={formData.date}
+                    value={formData.startDate}
                     onChange={handleChange}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="time" className="block text-sm font-medium text-gray-700">
-                    Time
+                  <label htmlFor="expectedEndDate" className="block text-sm font-medium text-gray-700">
+                    Expected End Date
                   </label>
                   <input
-                    type="time"
-                    name="time"
-                    id="time"
+                    type="datetime-local"
+                    name="expectedEndDate"
+                    id="expectedEndDate"
                     required
-                    value={formData.time}
+                    value={formData.expectedEndDate}
                     onChange={handleChange}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                   />

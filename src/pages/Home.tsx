@@ -154,11 +154,11 @@ export default function Home() {
                             </svg>
                             <span className='truncate' title={project.location}>{project.location}</span>
                           </div>
-                          <div className="flex items-center truncate" title={project.date}>
+                          <div className="flex items-center truncate" title={project.startDate}>
                             <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            {new Date(project.date).toLocaleDateString()} at {project.time}
+                            {new Date(project.startDate).toLocaleDateString()} at {new Date(project.startDate).toLocaleTimeString()}
                           </div>
                           <div className="flex items-center">
                             <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

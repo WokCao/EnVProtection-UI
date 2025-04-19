@@ -30,7 +30,7 @@ function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number,
 export default function CreateProject() {
   const { user } = useAuthStore();
 
-  if (!user) {
+  if (!user || user.role !== 'ORGANIZATION') {
     return null;
   }
 
@@ -47,15 +47,12 @@ export default function CreateProject() {
     location: '',
     latitude: 0,
     longitude: 0,
-    date: '',
-    time: '',
+    startDate: '',
+    expectedEndDate: '',
     requirements: [],
     impact: '',
     volunteersNeeded: 1,
-    hostOrganization: {
-      id: user.id,
-      fullName: user.fullName,
-    },
+    hostOrganization: user,
     volunteers: [],
   });
 
@@ -329,32 +326,32 @@ export default function CreateProject() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-                  Date
+                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
+                  Start Date
                 </label>
                 <input
-                  type="date"
-                  name="date"
-                  id="date"
+                  type="datetime-local"
+                  name="startDate"
+                  id="startDate"
                   required
-                  value={formData.date}
+                  value={formData.startDate}
                   onChange={handleChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                 />
               </div>
 
               <div>
-                <label htmlFor="time" className="block text-sm font-medium text-gray-700">
-                  Time
+                <label htmlFor="expectedEndDate" className="block text-sm font-medium text-gray-700">
+                  Expected End Date
                 </label>
                 <input
-                  type="time"
-                  name="time"
-                  id="time"
+                  type="datetime-local"
+                  name="expectedEndDate"
+                  id="expectedEndDate"
                   required
-                  value={formData.time}
+                  value={formData.expectedEndDate}
                   onChange={handleChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                 />

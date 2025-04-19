@@ -486,7 +486,7 @@ export default function ProjectDetails() {
                   Date & Time
                 </h3>
                 <p className="text-gray-900 font-medium">
-                  {new Date(project.date).toLocaleDateString()} at {project.time}
+                  {new Date(project.startDate).toLocaleDateString()} at {new Date(project.startDate).toLocaleTimeString()}
                 </p>
               </div>
               <div>

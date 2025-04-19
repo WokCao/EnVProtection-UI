@@ -85,7 +85,7 @@ export default function OrganizationProjects() {
         case 'location':
           return a.location.localeCompare(b.location);
         case 'date':
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
+          return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
         case 'volunteers':
           return b.volunteersNeeded - a.volunteersNeeded;
         default:
@@ -319,7 +319,7 @@ export default function OrganizationProjects() {
                 </p>
                 <div className="mt-4 flex flex-col sm:flex-row md:justify-between gap-4 text-sm text-gray-500">
                   <span className="truncate sm:w-1/3">📍 {project.location}</span>
-                  <span className="truncate sm:w-1/3">📅 {new Date(project.date).toLocaleDateString()}</span>
+                  <span className="truncate sm:w-1/3">📅 {new Date(project.startDate).toLocaleDateString()}</span>
                   <span className="truncate sm:w-1/3">👥 {project.volunteersNeeded} needed</span>
                 </div>
               </div>

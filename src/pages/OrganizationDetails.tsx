@@ -157,7 +157,7 @@ export default function OrganizationDetails() {
                     <p className="text-gray-600 mb-4 line-clamp-3">{project.briefDescription}</p>
                     <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
                       <span>📍 {project.location}</span>
-                      <span>📅 {new Date(project.date).toLocaleDateString()}</span>
+                      <span>📅 {new Date(project.startDate).toLocaleDateString()}</span>
                       <span>👥 {project.volunteersNeeded} volunteers needed</span>
                     </div>
                     <Link

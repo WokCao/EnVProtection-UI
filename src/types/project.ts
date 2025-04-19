@@ -1,4 +1,4 @@
-import { User } from "./user";
+import { User } from "../store/authStore";
 
 export type ProjectStatus = 'UPCOMING' | 'IN_PROGRESS' | 'DONE';
 
@@ -20,8 +20,8 @@ export interface Project {
   fullDescription: string;
   image: string;
   status: ProjectStatus;
-  date: string;
-  time: string;
+  startDate: string;
+  expectedEndDate: string;
   location: string;
   latitude: number;
   longitude: number;
