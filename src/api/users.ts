@@ -24,7 +24,7 @@ interface UpdateProfileData {
   phoneNumber?: string;
   address?: string;
   age?: number;
-
+  avatar?: string;
   description?: string;
   website?: string;
 }

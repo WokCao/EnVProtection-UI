@@ -7,6 +7,7 @@ import { projectsApi } from '../api/projects';
 import { usersApi } from '../api/users';
 import { Link } from 'react-router-dom';
 import { ArrowRightIcon } from '@heroicons/react/16/solid';
+import AvatarSelector from '../components/AvatarSelector';
 
 export default function Profile() {
   const { user, setUser } = useAuthStore();
@@ -110,6 +111,15 @@ export default function Profile() {
     }
   };
 
+  const handleAvatarSelect = async (newAvatar: string) => {
+    try {
+      await usersApi.updateProfile({ ...user, avatar: newAvatar });
+      setUser({ ...user, avatar: newAvatar });
+    } catch (error: any) {
+      setError(error.message || 'Failed to update avatar');
+    }
+  };
+
   if (!user) {
     return null;
   }
@@ -141,8 +151,11 @@ export default function Profile() {
           <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
             <div className="sm:col-span-1">
               <dt className="text-sm font-medium text-gray-500">Avatar</dt>
-              <dd className="mt-1 text-sm text-gray-900 flex items-center">
-                <img src={user.avatar} alt={user.fullName} className="w-16 h-16 rounded-full object-cover" />
+              <dd className="mt-1 text-sm text-gray-900">
+                <AvatarSelector 
+                  currentAvatar={user.avatar} 
+                  onSelect={handleAvatarSelect} 
+                />
               </dd>
             </div>
             
@@ -628,7 +641,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       {user.role === 'VOLUNTEER' && renderVolunteerProfile(user as Volunteer)}
       {user.role === 'ORGANIZATION' && renderOrganizationProfile(user as Organization)}
 
