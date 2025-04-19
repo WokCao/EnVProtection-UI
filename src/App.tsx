@@ -21,26 +21,25 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const reload = async () => {
     return await reloadUser();
   };
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     if (!user) {
       reload().then((isLoggedIn) => {
         setIsLoggedIn(isLoggedIn);
+        if (!isLoggedIn) {
+          return <Navigate to="/login" replace />;
+        }
       });
     }
   }, [user]);
 
-  if (isLoading && !isLoggedIn && !user) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
       </div>
     );
-  }
-
-  if (!isLoggedIn && !user) {
-    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;

@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Project } from '../types/project';
-import { User } from '../types/user';
 import { disableBodyScroll, enableBodyScroll } from '../utils/modal';
 import { projectsApi } from '../api/projects';
-import { useAuthStore } from '../store/authStore';
-import defaultImage from '../../public/panda.png';
+import { useAuthStore, User } from '../store/authStore';
 
 interface VolunteersModalProps {
   project: Project;
@@ -100,11 +98,11 @@ export default function VolunteersModal({ project, onClose, onVolunteerRemoved }
                 >
                   <div className="flex items-center space-x-4">
                     <img
-                      src={defaultImage}
+                      src={volunteer.avatar}
                       alt={volunteer.fullName}
                       className="h-10 w-10 rounded-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = defaultImage;
+                        (e.target as HTMLImageElement).src = '/panda.png';
                       }}
                     />
                     <div>

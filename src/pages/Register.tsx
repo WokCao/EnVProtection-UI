@@ -15,11 +15,11 @@ export default function Register() {
     fullName: '',
     address: '',
     phoneNumber: '',
+    avatar: '',
     // Volunteer fields
     age: '',
     // Organization fields
     description: '',
-    logo: '',
     website: '',
     foundedDate: '',
   });
@@ -56,7 +56,7 @@ export default function Register() {
           description: formData.description,
           address: formData.address,
           phoneNumber: formData.phoneNumber,
-          logo: formData.logo,
+          avatar: formData.avatar,
           website: formData.website,
           foundedDate: new Date(formData.foundedDate),
         };
@@ -426,16 +426,16 @@ export default function Register() {
         </div>
 
         <div>
-          <label htmlFor="logo" className="block text-sm font-medium text-gray-700">
-            Logo URL
+          <label htmlFor="avatar" className="block text-sm font-medium text-gray-700">
+            Logo
           </label>
           <input
             type="url"
-            id="logo"
+            id="avatar"
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            value={formData.logo}
-            onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+            value={formData.avatar}
+            onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
           />
         </div>
 

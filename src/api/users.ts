@@ -1,5 +1,6 @@
 import apiClient from './client';
-import { User, UserRole } from '../types/user';
+import { UserRole } from '../types/user';
+import { User } from '../store/authStore';
 import axios from 'axios';
 
 interface GetProfileResponse {
@@ -9,11 +10,11 @@ interface GetProfileResponse {
   role: UserRole;
   address: string;
   phoneNumber: string;
+  avatar: string;
   // Volunteer fields
   age?: number;
   // Organization fields
   description?: string;
-  logo?: string;
   website?: string;
   foundedDate?: Date;
 }

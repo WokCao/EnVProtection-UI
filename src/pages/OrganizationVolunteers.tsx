@@ -91,7 +91,7 @@ export default function OrganizationVolunteers() {
                         >
                             <div className="flex items-center space-x-4">
                                 <img
-                                    src={'/public/panda.png'}
+                                    src={'/panda.png'}
                                     alt={volunteer.fullName}
                                     className="h-12 w-12 rounded-full object-cover"
                                     onError={(e) => {

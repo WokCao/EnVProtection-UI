@@ -10,11 +10,12 @@ export interface User {
   fullName: string;
   address: string;
   phoneNumber: string;
+  avatar: string;
+  createdAt: Date;
 
   age?: number;
 
   description?: string;
-  logo?: string;
   website?: string;
   foundedDate?: Date;
 }
@@ -26,7 +27,7 @@ interface AuthState {
   error: string | null;
   login: (email: string, password: string) => Promise<boolean>;
   register: (data: any) => Promise<boolean>;
-  logout: () => Promise<boolean>;
+  logout: () => Promise<void>;
   clearError: () => void;
   setUser: (user: User) => void;
   reloadUser: () => Promise<boolean>;
@@ -77,10 +78,8 @@ export const useAuthStore = create<AuthState>((set) => ({
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       set({ user: null, isAuthenticated: false });
-      return true;
     } catch (error: any) {
       set({ error: error.message || 'Logout failed' });
-      return false;
     } finally {
       set({ isLoading: false });
     }

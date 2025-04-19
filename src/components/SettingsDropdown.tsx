@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 interface SettingsDropdownProps {
-  onLogout: () => Promise<boolean>;
+  onLogout: () => Promise<void>;
 }
 
 export default function SettingsDropdown({ onLogout }: SettingsDropdownProps) {
   const [showSettings, setShowSettings] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -25,6 +26,7 @@ export default function SettingsDropdown({ onLogout }: SettingsDropdownProps) {
   const handleLogout = async () => {
     setShowSettings(false);
     await onLogout();
+    navigate('/login');
   };
 
   return (

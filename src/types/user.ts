@@ -9,6 +9,7 @@ export interface BaseUser {
   address: string;
   phoneNumber: string;
   fullName: string;
+  avatar: string;
 }
 
 export interface Volunteer extends BaseUser {
@@ -19,7 +20,6 @@ export interface Volunteer extends BaseUser {
 export interface Organization extends BaseUser {
   role: 'ORGANIZATION';
   description: string;
-  logo: string;
   website?: string;
   foundedDate: Date;
 }

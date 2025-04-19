@@ -12,11 +12,12 @@ interface LoginResponse {
     role: UserRole;
     address: string;
     phoneNumber: string;
+    avatar: string;
+    createdAt: Date;
     // Volunteer fields
     age?: number;
     // Organization fields
     description?: string;
-    logo?: string;
     website?: string;
     foundedDate?: Date;
   };
@@ -33,7 +34,7 @@ interface RegisterData {
   age?: number;
   // Organization fields
   description?: string;
-  logo?: string;
+  avatar?: string;
   website?: string;
   foundedDate?: Date;
 }
