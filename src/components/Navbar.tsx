@@ -2,16 +2,12 @@ import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import Notification from './Notification';
 import SettingsDropdown from './SettingsDropdown';
-import { useState, useRef } from 'react';
-import { useClickOutside } from '../hooks/useClickOutside';
+import { useState } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/16/solid';
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuthStore();
   const [isProjectsDropdownOpen, setIsProjectsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(dropdownRef, () => setIsProjectsDropdownOpen(false));
 
   return (
     <nav className="bg-white shadow z-50">
@@ -24,46 +20,52 @@ export default function Navbar() {
               </Link>
             </div>
             {isAuthenticated && (
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    onMouseEnter={() => setIsProjectsDropdownOpen(true)}
-                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                  >
-                    Projects
-                    <ChevronDownIcon className="h-5 w-5 ml-2" />
-                  </button>
-                  {isProjectsDropdownOpen && user?.role === 'ORGANIZATION' && (
+              <div
+                className="hidden sm:ml-6 sm:flex sm:space-x-8"
+                onMouseEnter={() => setIsProjectsDropdownOpen(true)}
+                onMouseLeave={() => setIsProjectsDropdownOpen(false)}>
+                {user?.role === 'ORGANIZATION' && (
+                  <div className="relative">
                     <div
-                      onMouseLeave={() => setIsProjectsDropdownOpen(false)}
-                      className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+                      className="inline-flex items-center"
                     >
                       <Link
                         to="/projects"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium"
                       >
-                        My Projects
-                      </Link>
-                      <Link
-                        to="/create-project"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        Create Project
+                        Projects
+                        <ChevronDownIcon className="h-5 w-5 ml-2" />
                       </Link>
                     </div>
-                  )}
-                </div>
+                    {isProjectsDropdownOpen && (
+                      <div className="absolute left-0 pt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                        <Link
+                          to="/projects"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          My Projects
+                        </Link>
+                        <Link
+                          to="/create-project"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Create Project
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                )}
                 {user?.role !== 'ORGANIZATION' && (
                   <Link
                     to="/projects"
-                    className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                    className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium"
                   >
                     Projects
                   </Link>
                 )}
                 <Link
                   to="/organizations"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                  className="border-transparent text-gray-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 text-sm font-medium"
                 >
                   Organizations
                 </Link>
