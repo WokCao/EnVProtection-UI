@@ -18,28 +18,30 @@ import { useEffect, useState } from 'react';
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, isLoading, reloadUser } = useAuthStore();
-  const reload = async () => {
-    return await reloadUser();
-  };
-  const [, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!user) {
-      reload().then((isLoggedIn) => {
-        setIsLoggedIn(isLoggedIn);
-        if (!isLoggedIn) {
-          return <Navigate to="/login" replace />;
-        }
-      });
-    }
+    const checkLogin = async () => {
+      if (!user) {
+        const result = await reloadUser();
+        setIsLoggedIn(result);
+      } else {
+        setIsLoggedIn(true);
+      }
+    };
+    checkLogin();
   }, [user]);
 
-  if (isLoading) {
+  if (isLoading || isLoggedIn === null) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
       </div>
     );
+  }
+
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
