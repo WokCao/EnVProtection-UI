@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 interface SettingsDropdownProps {
-  onLogout: () => void;
+  onLogout: () => Promise<boolean>;
 }
 
 export default function SettingsDropdown({ onLogout }: SettingsDropdownProps) {
@@ -22,9 +22,9 @@ export default function SettingsDropdown({ onLogout }: SettingsDropdownProps) {
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setShowSettings(false);
-    onLogout();
+    await onLogout();
   };
 
   return (

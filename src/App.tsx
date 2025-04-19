@@ -14,21 +14,24 @@ import OrganizationDetails from './pages/OrganizationDetails';
 import OrganizationProjects from './pages/OrganizationProjects';
 import Notifications from './pages/Notifications';
 import OrganizationVolunteers from './pages/OrganizationVolunteers';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, user, isLoading, reloadUser, error } = useAuthStore();
-  const [isReloadingSuccessful, setIsReloadingSuccessful] = useState(false);
-  const hasReloaded = useRef(false);
+  const { user, isLoading, reloadUser } = useAuthStore();
+  const reload = async () => {
+    return await reloadUser();
+  };
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    if (!user && !hasReloaded.current) {
-      reloadUser(setIsReloadingSuccessful);
-      hasReloaded.current = true;
+    if (!user) {
+      reload().then((isLoggedIn) => {
+        setIsLoggedIn(isLoggedIn);
+      });
     }
   }, [user]);
 
-  if (isLoading || (!user && !isAuthenticated && !isReloadingSuccessful)) {
+  if (isLoading && !isLoggedIn && !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
@@ -36,7 +39,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!isAuthenticated || error) {
+  if (!isLoggedIn && !user) {
     return <Navigate to="/login" replace />;
   }
 

@@ -24,12 +24,12 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (data: any) => Promise<void>;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (data: any) => Promise<boolean>;
+  logout: () => Promise<boolean>;
   clearError: () => void;
   setUser: (user: User) => void;
-  reloadUser: (setIsReloadingSuccessful: React.Dispatch<React.SetStateAction<boolean>>) => void;
+  reloadUser: () => Promise<boolean>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -45,8 +45,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
       set({ user: response.user, isAuthenticated: true });
+      return true;
     } catch (error: any) {
       set({ error: error.message || 'Login failed' });
+      return false;
     } finally {
       set({ isLoading: false });
     }
@@ -59,8 +61,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('refreshToken', response.refreshToken);
       set({ user: response.user, isAuthenticated: true });
+      return true;
     } catch (error: any) {
       set({ error: error.message || 'Registration failed' });
+      return false;
     } finally {
       set({ isLoading: false });
     }
@@ -73,8 +77,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       set({ user: null, isAuthenticated: false });
+      return true;
     } catch (error: any) {
       set({ error: error.message || 'Logout failed' });
+      return false;
     } finally {
       set({ isLoading: false });
     }
@@ -88,15 +94,15 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user });
   },
 
-  reloadUser: async (setIsReloadingSuccessful: React.Dispatch<React.SetStateAction<boolean>>) => {
+  reloadUser: async () => {
     set({ isLoading: true, error: null });
     try {
       const response = await usersApi.getProfile();
       set({ user: response, isAuthenticated: true });
-      setIsReloadingSuccessful(true);
+      return true;
     } catch (error: any) {
       set({ error: error.message, user: null, isAuthenticated: false });
-      setIsReloadingSuccessful(false);
+      return false;
     } finally {
       set({ isLoading: false });
     }
